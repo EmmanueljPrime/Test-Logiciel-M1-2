@@ -77,3 +77,33 @@ describe('Add stock', () => {
         expect(() => lab.addStock('Water', -5)).toThrow('Quantity to add must be non-negative');
     });
 });
+
+describe('Laboratory with Reactions', () => {
+
+    test('should initialize with reactions and products',()=>{
+        const substances = ['Hydrogen', 'Oxygen'];
+        const reactions = {
+            'Water': [{ quantity: 2, substance: 'Hydrogen' }, { quantity: 1, substance: 'Oxygen' }]
+        };
+        const lab = new Laboratory(substances, reactions);
+        
+        expect(lab.knownSubstances).toContain('Water');
+        
+        expect(lab.getQuantity('Water')).toBe(0);
+    })
+
+    test('should allow adding stock directly to a product defined in reactions',()=>{
+    const substances = ['Hydrogen', 'Oxygen'];
+        const reactions = {
+            'Water': [{ quantity: 2, substance: 'Hydrogen' }, { quantity: 1, substance: 'Oxygen' }]
+        };
+        const lab = new Laboratory(substances, reactions);
+
+        lab.addStock('Water', 10);
+        
+        expect(lab.getQuantity('Water')).toBe(10);
+        
+        expect(lab.getQuantity('Hydrogen')).toBe(0);
+    })
+
+});

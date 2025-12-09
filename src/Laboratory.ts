@@ -1,5 +1,5 @@
 const VALID_SUBSTANCES = new Set([
-    'Water', 'Nitrogen', 'Carbon', 'Oxygen', 'Gold', 'Iron'
+    'Water', 'Nitrogen', 'Carbon', 'Oxygen', 'Gold', 'Iron', 'Hydrogen'
 ]);
 
 export class Laboratory {
