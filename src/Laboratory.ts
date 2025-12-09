@@ -3,7 +3,7 @@ const VALID_SUBSTANCES = new Set([
 ]);
 
 export class Laboratory {
-    knownSubstances: string[];
+    private readonly _knownSubstances: string[];
 
     constructor(substances: string[]) {
         for (const substance of substances) {
@@ -11,6 +11,10 @@ export class Laboratory {
                 throw new Error(`Unknown substance: ${substance}`);
             }
         }
-        this.knownSubstances = substances;
+        this._knownSubstances = substances;
+    }
+
+    public get knownSubstances(): string[] {
+        return this._knownSubstances;
     }
 }   
