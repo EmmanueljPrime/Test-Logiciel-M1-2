@@ -13,4 +13,16 @@ describe('Laboratory', () => {
         expect(() => new Laboratory(substances)).toThrow('Unknown substance: Unobtainium');
     });
 
+    test(' should initialize substances  with a default quantity of 0', () => {
+        const substances = ['Oxygen', 'Carbon'];
+        const lab = new Laboratory(substances);
+        for (const substance of lab.knownSubstances) {
+            expect(substance).toBeDefined();
+        }
+    });
+
+    test('should not allow duplicate substances', () => {
+        const substances = ['Gold', 'Gold', 'Iron'];
+        expect(() => new Laboratory(substances)).toThrow('Duplicate substance: Gold');
+    });
 });
