@@ -2,7 +2,7 @@ type Ingredient = { quantity: number; substance: string };
 type Reactions = Record<string, Ingredient[]>;
 
 const VALID_SUBSTANCES = new Set([
-    'Water', 'Nitrogen', 'Carbon', 'Oxygen', 'Gold', 'Iron', 'Hydrogen', 'Chlorine', 'Sodium', 'Ice', 'A', 'B', 'C', 'X', 'Y', 'Base1' // Ajout des substances de test génériques pour que ça compile avec tes tests
+    'Water', 'Nitrogen', 'Carbon', 'Oxygen', 'Gold', 'Iron', 'Hydrogen', 'Chlorine', 'Sodium', 'Ice', 'A', 'B', 'C', 'X', 'Y', 'Base1'
 ]);
 
 export class Laboratory {
@@ -56,15 +56,7 @@ export class Laboratory {
         this.productionStack.add(productName);
 
         try {
-            for (const ingredient of recipe) {
-                const requiredTotal = desiredQuantity * ingredient.quantity;
-                const currentStock = this.getQuantity(ingredient.substance);
-
-                if (currentStock < requiredTotal) {
-                    const missing = requiredTotal - currentStock;
-                    this.make(ingredient.substance, missing);
-                }
-            }
+            this.ensureIngredients(recipe, desiredQuantity);
 
             const maxPossible = this.calculateMaxProduction(recipe, desiredQuantity);
 
@@ -80,11 +72,25 @@ export class Laboratory {
         }
     }
 
+    private ensureIngredients(recipe: Ingredient[], desiredQuantity: number): void {
+        for (const ingredient of recipe) {
+            const requiredTotal = desiredQuantity * ingredient.quantity;
+            const currentStock = this.getQuantity(ingredient.substance);
+
+            if (currentStock < requiredTotal) {
+                const missing = requiredTotal - currentStock;
+                this.make(ingredient.substance, missing);
+            }
+        }
+    }
+
     private calculateMaxProduction(recipe: Ingredient[], desiredQuantity: number): number {
         let maxPossible = desiredQuantity;
 
         for (const ingredient of recipe) {
             const stockAvailable = this.getQuantity(ingredient.substance);
+            if (ingredient.quantity === 0) continue; 
+            
             const possibleWithThisIngredient = stockAvailable / ingredient.quantity;
             maxPossible = Math.min(maxPossible, possibleWithThisIngredient);
         }
