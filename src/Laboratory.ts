@@ -37,4 +37,19 @@ export class Laboratory {
         }
         return quantity;
     }
+
+    public addStock(substance: string, amount: number): void{
+
+        const currentQuantity = this.stock.get(substance);
+
+        if(currentQuantity === undefined){
+            throw new Error(`Substance not found: ${substance}`);
+        }
+
+        if (amount < 0) {
+            throw new Error('Quantity to add must be non-negative');
+        }
+        
+        this.stock.set(substance, currentQuantity + amount);
+    }
 }   
