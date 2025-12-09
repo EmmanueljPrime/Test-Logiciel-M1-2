@@ -40,8 +40,7 @@ export class Laboratory {
             throw new Error('Quantity to add must be non-negative');
         }
         
-        const currentQuantity = this.getQuantity(name);
-        this.stock.set(name, currentQuantity + amount);
+        this.updateStock(name, amount);
     }
 
     public make(productName: string, desiredQuantity: number): number {
@@ -51,28 +50,38 @@ export class Laboratory {
             throw new Error(`Cannot make ${productName}: No reaction defined`);
         }
 
+        const maxPossible = this.calculateMaxProduction(recipe, desiredQuantity);
+
+        if (maxPossible > 0) {
+            this.consumeIngredients(recipe, maxPossible);
+            this.updateStock(productName, maxPossible);
+        }
+
+        return maxPossible;
+    }
+
+    private calculateMaxProduction(recipe: Ingredient[], desiredQuantity: number): number {
         let maxPossible = desiredQuantity;
 
         for (const ingredient of recipe) {
             const stockAvailable = this.getQuantity(ingredient.substance);
-            const requiredPerUnit = ingredient.quantity;
-
-            const possibleWithThisIngredient = stockAvailable / requiredPerUnit;
+            const possibleWithThisIngredient = stockAvailable / ingredient.quantity;
             maxPossible = Math.min(maxPossible, possibleWithThisIngredient);
         }
 
-        if (maxPossible > 0) {
-            for (const ingredient of recipe) {
-                const currentStock = this.getQuantity(ingredient.substance);
-                const amountToConsume = maxPossible * ingredient.quantity;
-                this.stock.set(ingredient.substance, currentStock - amountToConsume);
-            }
-
-            const currentProductStock = this.getQuantity(productName);
-            this.stock.set(productName, currentProductStock + maxPossible);
-        }
-
         return maxPossible;
+    }
+
+    private consumeIngredients(recipe: Ingredient[], amountToProduce: number): void {
+        for (const ingredient of recipe) {
+            const amountToConsume = amountToProduce * ingredient.quantity;
+            this.updateStock(ingredient.substance, -amountToConsume);
+        }
+    }
+
+    private updateStock(name: string, delta: number): void {
+        const currentQuantity = this.getQuantity(name);
+        this.stock.set(name, currentQuantity + delta);
     }
 
     private registerBaseSubstance(substance: string): void {
