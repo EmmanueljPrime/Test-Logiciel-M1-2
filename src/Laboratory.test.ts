@@ -171,3 +171,34 @@ describe('Manufacturing (make)', () => {
         expect(lab.getQuantity('Hydrogen')).toBe(20); 
     });
 });
+
+describe('Recursive Manufacturing', () => {
+    let lab: Laboratory;
+
+    const reactions = {
+        'C': [{ quantity: 1, substance: 'Base1' }],
+        'B': [{ quantity: 1, substance: 'C' }],    
+        'A': [{ quantity: 1, substance: 'B' }],   
+        'X': [{ quantity: 1, substance: 'Y' }],
+        'Y': [{ quantity: 1, substance: 'X' }]
+    };
+
+    beforeEach(() => {
+        lab = new Laboratory(['Base1'], reactions);
+    });
+
+    test('should recursively produce ingredients if missing', () => {
+        lab.addStock('Base1', 10);
+        
+        const produced = lab.make('A', 1);
+
+        expect(produced).toBe(1);
+        expect(lab.getQuantity('A')).toBe(1);
+        expect(lab.getQuantity('Base1')).toBe(9); 
+    });
+
+    test('should detect circular dependencies and stop (avoid infinite loop)', () => {
+        lab.addStock('Base1', 10);
+        expect(() => lab.make('X', 1)).toThrow(/Circular dependency/); 
+    });
+});
