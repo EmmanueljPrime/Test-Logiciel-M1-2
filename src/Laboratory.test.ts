@@ -29,7 +29,7 @@ describe('Laboratory', () => {
 });
 
 describe('Quantity', ()=> {
-    
+
     test('should return 0 for all known substances by default', () => {
         const substances = ['Water', 'Nitrogen', 'Oxygen'];
         const lab = new Laboratory(substances);
@@ -53,3 +53,26 @@ describe('Quantity', ()=> {
         expect(nitrogenQuantity).toBe(0);
     });
 })
+
+describe('Add stock', () => {
+
+    test('should add quantity to an existing substance', () => {
+        const lab = new Laboratory(['Water', 'Nitrogen']);
+        lab.addStock('Water', 10);
+        expect(lab.getQuantity('Water')).toBe(10);
+    });
+    test('should accumulate quantity when adding multiple times', () => {
+        const lab = new Laboratory(['Water']);
+        lab.addStock('Water', 5);
+        lab.addStock('Water', 15);
+        expect(lab.getQuantity('Water')).toBe(20);
+    });
+    test('should throw an error when adding to a substance not in the laboratory', () => {
+        const lab = new Laboratory(['Water', 'Nitrogen']);
+        expect(() => lab.addStock('Unobtainium', 10)).toThrow('Substance not found: Unobtainium');
+    });
+    test('should throw an error when adding a negative quantity', () => {
+        const lab = new Laboratory(['Water', 'Nitrogen']);
+        expect(() => lab.addStock('Water', -5)).toThrow('Quantity to add must be non-negative');
+    });
+});
