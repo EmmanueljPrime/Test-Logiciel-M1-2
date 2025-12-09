@@ -32,4 +32,11 @@ export class Laboratory {
     public get knownSubstances(): string[] {
         return this._knownSubstances;
     }
+
+    public getQuantity(substance: string): number {
+        if(!this.stock.has(substance)) {
+            throw new Error(`Substance not found: ${substance}`);
+        }
+        return this.stock.get(substance)!;
+    }
 }   

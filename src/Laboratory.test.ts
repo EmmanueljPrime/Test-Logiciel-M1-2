@@ -13,7 +13,7 @@ describe('Laboratory', () => {
         expect(() => new Laboratory(substances)).toThrow('Unknown substance: Unobtainium');
     });
 
-    test(' should initialize substances  with a default quantity of 0', () => {
+    test('should initialize substances  with a default quantity of 0', () => {
         const substances = ['Oxygen', 'Carbon'];
         const lab = new Laboratory(substances);
         for (const substance of lab.knownSubstances) {
@@ -29,11 +29,12 @@ describe('Laboratory', () => {
 });
 
 describe('Quantity', ()=> {
+    
     test('should return 0 for all known substances by default', () => {
         const substances = ['Water', 'Nitrogen', 'Oxygen'];
         const lab = new Laboratory(substances);
         for (const substance of substances) {
-            expect(substance.getQuantity()).toBe(0);
+            expect(lab.getQuantity(substance)).toBe(0);
         }
     });
 
