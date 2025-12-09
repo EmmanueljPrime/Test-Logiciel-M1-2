@@ -3,7 +3,7 @@ import {Laboratory} from './Laboratory';
 describe('Laboratory', () => {
 
     test('should create an instance of Laboratory with known substances', () => {
-        const substances = ['Water', 'Ethanol', 'Acetone'];
+        const substances = ['Water', 'Nitrogen'];
         const lab = new Laboratory(substances);
         expect(lab.knownSubstances).toEqual(substances);
     });
