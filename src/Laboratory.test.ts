@@ -160,15 +160,18 @@ describe('Manufacturing (make)', () => {
         expect(lab.getQuantity('Water')).toBe(7); 
     });
 
-    test('should not produce recursive ingredients automatically', () => {
-        
+    test('should produce recursive ingredients automatically', () => {
+
         lab.addStock('Hydrogen', 20);
         lab.addStock('Oxygen', 10);
 
         const produced = lab.make('Ice', 5);
 
-        expect(produced).toBe(0); 
-        expect(lab.getQuantity('Hydrogen')).toBe(20); 
+        expect(produced).toBe(5); 
+        expect(lab.getQuantity('Ice')).toBe(5);
+
+        expect(lab.getQuantity('Hydrogen')).toBe(10);
+        expect(lab.getQuantity('Oxygen')).toBe(5);
     });
 });
 
