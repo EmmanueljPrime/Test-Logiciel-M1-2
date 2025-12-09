@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",                /* Version de JavaScript cible */
+    "module": "commonjs",              /* Type de modules (nécessaire pour Jest/Node par défaut) */
+    "outDir": "./dist",                /* Dossier de sortie pour la compilation */
+    "rootDir": "./src",                /* Dossier racine de tes sources */
+    "strict": true,                    /* Active toutes les vérifications strictes de type (Recommandé) */
+    "esModuleInterop": true,           /* Permet l'interopérabilité avec les modules CommonJS */
+    "skipLibCheck": true,              /* Ignore la vérification des fichiers de déclaration (.d.ts) */
+    "forceConsistentCasingInFileNames": true /* Vérifie la casse des noms de fichiers */
+  },
+  "include": ["src/**/*"],             /* Inclure tout ce qui est dans src */
+  "exclude": ["node_modules", "**/*.test.ts"] /* Exclure node_modules */
+}
