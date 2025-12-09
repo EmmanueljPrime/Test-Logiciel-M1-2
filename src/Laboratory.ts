@@ -2,26 +2,34 @@ const VALID_SUBSTANCES = new Set([
     'Water', 'Nitrogen', 'Carbon', 'Oxygen', 'Gold', 'Iron', 'Hydrogen'
 ]);
 
+type Reaction = { [productName: string]: Array<{ quantity: number, substance: string }> };
+
 export class Laboratory {
     private readonly _knownSubstances: string[];
     private stock: Map<string, number>; 
+    private reactions: Reaction
 
-        constructor(substances: string[]) {
+        constructor(substances: string[], reactions: Reaction = {}) {
             this.stock = new Map();
+        this.reactions = reactions;
 
-            for (const substance of substances) {
-                if (!VALID_SUBSTANCES.has(substance)) {
-                    throw new Error(`Unknown substance: ${substance}`);
-                }
-
-                if (this.stock.has(substance)) {
-                    throw new Error(`Duplicate substance: ${substance}`);
-                }
-
-                this.stock.set(substance, 0.0);
+        for (const substance of substances) {
+            if (!VALID_SUBSTANCES.has(substance)) {
+                throw new Error(`Unknown substance: ${substance}`);
             }
+            if (this.stock.has(substance)) {
+                throw new Error(`Duplicate substance: ${substance}`);
+            }
+            this.stock.set(substance, 0.0);
+        }
 
-            this._knownSubstances = Array.from(this.stock.keys());
+        for (const product of Object.keys(this.reactions)) {
+             if (!this.stock.has(product)) {
+                this.stock.set(product, 0.0);
+             }
+        }
+
+        this._knownSubstances = Array.from(this.stock.keys());
         }
 
     public get knownSubstances(): string[] {
