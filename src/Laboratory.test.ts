@@ -25,4 +25,30 @@ describe('Laboratory', () => {
         const substances = ['Gold', 'Gold', 'Iron'];
         expect(() => new Laboratory(substances)).toThrow('Duplicate substance: Gold');
     });
+
 });
+
+describe('Quantity', ()=> {
+    test('should return 0 for all known substances by default', () => {
+        const substances = ['Water', 'Nitrogen', 'Oxygen'];
+        const lab = new Laboratory(substances);
+        for (const substance of substances) {
+            expect(substance.getQuantity()).toBe(0);
+        }
+    });
+
+    test('should return error when requesting for a substance not in the laboratory', () => {
+        const substances = ['Water', 'Nitrogen', 'Oxygen'];
+        const lab = new Laboratory(substances);
+        expect(() => lab.getQuantity('Unobtainium')).toThrow('Substance not found: Unobtainium');
+    });
+
+    test('should return independent quantities for different substances', () => {
+        const substances = ['Water', 'Nitrogen', 'Oxygen'];
+        const lab = new Laboratory(substances);
+        const waterQuantity = lab.getQuantity('Water');
+        const nitrogenQuantity = lab.getQuantity('Nitrogen');
+        expect(waterQuantity).toBe(0);
+        expect(nitrogenQuantity).toBe(0);
+    });
+})
