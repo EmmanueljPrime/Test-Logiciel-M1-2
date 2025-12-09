@@ -1,9 +1,8 @@
-// Définitions de types exportées pour être réutilisables
-export type Ingredient = { quantity: number; substance: string };
-export type Reactions = Record<string, Ingredient[]>;
+type Ingredient = { quantity: number; substance: string };
+type Reactions = Record<string, Ingredient[]>;
 
 const VALID_SUBSTANCES = new Set([
-    'Water', 'Nitrogen', 'Carbon', 'Oxygen', 'Gold', 'Iron', 'Hydrogen', 'Chlorine', 'Sodium'
+    'Water', 'Nitrogen', 'Carbon', 'Oxygen', 'Gold', 'Iron', 'Hydrogen', 'Chlorine', 'Sodium', 'Ice'
 ]);
 
 export class Laboratory {
@@ -13,7 +12,9 @@ export class Laboratory {
     constructor(initialSubstances: string[], reactions: Reactions = {}) {
         this.reactions = reactions;
 
-        initialSubstances.forEach(sub => this.registerBaseSubstance(sub));
+        for (const substance of initialSubstances) {
+            this.registerBaseSubstance(substance);
+        }
 
         Object.keys(this.reactions).forEach(product => {
             if (!this.stock.has(product)) {
@@ -38,10 +39,40 @@ export class Laboratory {
         if (amount < 0) {
             throw new Error('Quantity to add must be non-negative');
         }
-
-        const currentQuantity = this.getQuantity(name);
         
+        const currentQuantity = this.getQuantity(name);
         this.stock.set(name, currentQuantity + amount);
+    }
+
+    public make(productName: string, desiredQuantity: number): number {
+        const recipe = this.reactions[productName];
+
+        if (!recipe) {
+            throw new Error(`Cannot make ${productName}: No reaction defined`);
+        }
+
+        let maxPossible = desiredQuantity;
+
+        for (const ingredient of recipe) {
+            const stockAvailable = this.getQuantity(ingredient.substance);
+            const requiredPerUnit = ingredient.quantity;
+
+            const possibleWithThisIngredient = stockAvailable / requiredPerUnit;
+            maxPossible = Math.min(maxPossible, possibleWithThisIngredient);
+        }
+
+        if (maxPossible > 0) {
+            for (const ingredient of recipe) {
+                const currentStock = this.getQuantity(ingredient.substance);
+                const amountToConsume = maxPossible * ingredient.quantity;
+                this.stock.set(ingredient.substance, currentStock - amountToConsume);
+            }
+
+            const currentProductStock = this.getQuantity(productName);
+            this.stock.set(productName, currentProductStock + maxPossible);
+        }
+
+        return maxPossible;
     }
 
     private registerBaseSubstance(substance: string): void {

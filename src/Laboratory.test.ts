@@ -88,7 +88,7 @@ describe('Laboratory with Reactions', () => {
         const lab = new Laboratory(substances, reactions);
         
         expect(lab.knownSubstances).toContain('Water');
-        
+
         expect(lab.getQuantity('Water')).toBe(0);
     })
 
@@ -106,4 +106,68 @@ describe('Laboratory with Reactions', () => {
         expect(lab.getQuantity('Hydrogen')).toBe(0);
     })
 
+});
+
+describe('Manufacturing (make)', () => {
+    let lab: Laboratory;
+
+    const reactions = {
+        'Water': [
+            { quantity: 2, substance: 'Hydrogen' }, 
+            { quantity: 1, substance: 'Oxygen' }
+        ],
+        'Ice': [
+            { quantity: 1, substance: 'Water' }
+        ]
+    };
+
+    beforeEach(() => {
+        lab = new Laboratory(['Hydrogen', 'Oxygen'], reactions);
+    });
+
+    test('should produce the requested quantity if enough ingredients are present', () => {
+        lab.addStock('Hydrogen', 20);
+        lab.addStock('Oxygen', 10);
+
+        const produced = lab.make('Water', 5);
+
+        expect(produced).toBe(5);
+        expect(lab.getQuantity('Water')).toBe(5);
+        expect(lab.getQuantity('Hydrogen')).toBe(10); 
+        expect(lab.getQuantity('Oxygen')).toBe(5);    
+    });
+
+    test('should only produce what is possible based on limiting ingredient', () => {
+        lab.addStock('Hydrogen', 10); 
+        lab.addStock('Oxygen', 2);    
+
+        const produced = lab.make('Water', 100);
+
+        expect(produced).toBe(2);
+        expect(lab.getQuantity('Water')).toBe(2);
+        expect(lab.getQuantity('Oxygen')).toBe(0); 
+        expect(lab.getQuantity('Hydrogen')).toBe(6);
+    });
+
+    test('should handle reactions using other products as ingredients (Hierarchical)', () => {
+        lab.addStock('Water', 10);
+
+
+        const produced = lab.make('Ice', 3);
+
+        expect(produced).toBe(3);
+        expect(lab.getQuantity('Ice')).toBe(3);
+        expect(lab.getQuantity('Water')).toBe(7); 
+    });
+
+    test('should not produce recursive ingredients automatically', () => {
+        
+        lab.addStock('Hydrogen', 20);
+        lab.addStock('Oxygen', 10);
+
+        const produced = lab.make('Ice', 5);
+
+        expect(produced).toBe(0); 
+        expect(lab.getQuantity('Hydrogen')).toBe(20); 
+    });
 });
